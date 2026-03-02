@@ -119,11 +119,11 @@ def insert_match(conn, parsed_match):
         return result[0]
     cur.execute(
     """
-    INSERT INTO matches (RiotMatchID, Duration, GameMode, PatchVersion, WinningTeam)
-    VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO matches (RiotMatchID, Duration, GameMode, PatchVersion, WinningTeam, QueueID)
+    VALUES (%s, %s, %s, %s, %s, %s)
     """,
     (parsed_match['MatchID'],parsed_match['Duration'], parsed_match['GameMode'],
-     parsed_match['PatchVersion'], parsed_match['WinningTeam'],)
+     parsed_match['PatchVersion'], parsed_match['WinningTeam'], parsed_match['QueueId'],)
     )
 
     conn.commit()

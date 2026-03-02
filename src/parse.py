@@ -20,7 +20,8 @@ def parse_match(match_data):
         'Duration': duration,
         'GameMode': gamemode,
         'PatchVersion': patchversion,
-        'WinningTeam': winning_team
+        'WinningTeam': winning_team,
+        'QueueID': info.get('queueId')
     }
 
 def parse_players(match_data):
