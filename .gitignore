@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+.DS_Store
+venv/
+thoughts.md
+accounts.json
+items.json
+.vscode
+ideas.md
+sql/sql_answers.md
+sql/sql_practice.md
+report.md
