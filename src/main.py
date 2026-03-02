@@ -10,14 +10,14 @@ def main():
         print("\n=== Noob ===")
         print("1. Add account")
         print("2. List accounts")
-        print("3. Get latest match")
+        print("3. Get latest match (dont use)")
         print("4. Fetch all ranked matches (this season)")
-        print("5. Initialise database")
-        print("6. Wipe database")
-        print("7. Fetch all normal matches (this year)")
-        print("8. Normal Game Test Function")
+        print("5. Fetch all normal matches (this year)")
+        print("q. Exit\n")
+        print("nmtest). Normal Game Test Function")
+        print("init). Initialise database")
+        print("wipe). Wipe database")
 
-        print("q. Exit")
 
         choice = input(">>> ")
 
@@ -30,13 +30,13 @@ def main():
         elif choice == "4":
             menu_fetch_all_ranked(conn)
         elif choice == "5":
-            menu_init_db(conn)
-        elif choice == "6":
-            menu_clean_db(conn)
-        elif choice == "7":
             menu_fetch_all_normal_games(conn)
-        elif choice == "8":
+        elif choice == "nmtest":
             menu_normaltest()
+        elif choice == "init":
+            menu_init_db(conn)
+        elif choice == "wipe":
+            menu_clean_db(conn)
         elif choice == "q":
             break
         else:

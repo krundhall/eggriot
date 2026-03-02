@@ -24,6 +24,7 @@ TABLES = [
         PatchVersion varchar(30) DEFAULT NULL,
         WinningTeam varchar(5) DEFAULT NULL,
         RiotMatchID varchar(50) DEFAULT NULL,
+        QueueID int DEFAULT NULL,
         PRIMARY KEY (MatchID),
         UNIQUE KEY (RiotMatchID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
@@ -123,7 +124,7 @@ def insert_match(conn, parsed_match):
     VALUES (%s, %s, %s, %s, %s, %s)
     """,
     (parsed_match['MatchID'],parsed_match['Duration'], parsed_match['GameMode'],
-     parsed_match['PatchVersion'], parsed_match['WinningTeam'], parsed_match['QueueId'],)
+     parsed_match['PatchVersion'], parsed_match['WinningTeam'], parsed_match['QueueID'],)
     )
 
     conn.commit()
