@@ -105,8 +105,42 @@ def menu_fetch_all_ranked(conn):
                     new_count += 1
                     elapsed = time.time() - start_time
                     rate = new_count / (elapsed / 60)
-                    print(f"  [{new_count} stored | {rate:.1f}/min | {int(elapsed // 60)}m {int(elapsed % 60)}s elapsed] {match_id}")
+                    print(f"  [{new_count} stored | {rate:.1f}/min | {int(elapsed // 60)}m {int(elapsed % 60)}s elapsed]")
             except Exception as e:
                 print(f"  [ERROR] {match_id}: {e}")
 
         print(f"Done. {new_count} new matches stored for {name}#{tag}.")
+
+def menu_normaltest():
+    game_name = input("Enter name: ")
+    tag_line = input("Enter tag: ")
+    get_latest_400_game(game_name, tag_line)
+
+def menu_fetch_all_normal_games(conn):
+    accounts = load_accounts()
+    if not accounts:
+        print("No accounts tracked.")
+        return
+
+    for account in accounts:
+        name = account['gameName']
+        tag = account['tagLine']
+        puuid = account['puuid']
+
+        print(f"\nFetching normal games for {name}#{tag}...")
+
+        new_count = 0
+        start_time = time.time()
+        for match_id, match_data in iter_normal_match_ids(puuid):
+            if match_exists(conn, match_id):
+                continue
+            try:
+                if store_match(conn, match_data):
+                    new_count += 1
+                    elapsed = time.time() - start_time
+                    rate = new_count / (elapsed / 60)
+                    print(f"  [{new_count} stored | {rate:.1f}/min | {int(elapsed // 60)}m {int(elapsed % 60)}s elapsed]")
+            except Exception as e:
+                print(f"  [ERROR] {match_id}: {e}")
+
+        print(f"Done. {new_count} new normal matches stored for {name}#{tag}")

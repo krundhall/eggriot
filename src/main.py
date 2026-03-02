@@ -14,6 +14,9 @@ def main():
         print("4. Fetch all ranked matches (this season)")
         print("5. Initialise database")
         print("6. Wipe database")
+        print("7. Fetch all normal matches (this year)")
+        print("8. Normal Game Test Function")
+
         print("q. Exit")
 
         choice = input(">>> ")
@@ -30,6 +33,10 @@ def main():
             menu_init_db(conn)
         elif choice == "6":
             menu_clean_db(conn)
+        elif choice == "7":
+            menu_fetch_all_normal_games(conn)
+        elif choice == "8":
+            menu_normaltest()
         elif choice == "q":
             break
         else:
