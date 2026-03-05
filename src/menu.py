@@ -1,146 +1,102 @@
-import time
-from riot_api import *
-from accounts import *
-from db import store_match, populate_items, match_exists, init_db, clean_db
-
-
-def fetch_latest_match_data():
-    list_accounts()
-    game_name = input("Enter name: ")
-    tag_line = input("Enter tag: ")
-
-    puuid = get_puuid_by_riot_id(game_name, tag_line)['puuid']
-    if not puuid:
-        return None
-
-    match_id = get_latest_match(puuid)
-    if not match_id:
-        print("No match found!")
-        return None
-
-    print(f"Latest match: {match_id}\n")
-    return get_match_details(match_id)
+import datetime
+from riot_api import iter_ranked_match_ids, iter_normal_match_ids, get_match_details, SEASON_2026_START
+from accounts import load_accounts, list_accounts, add_account
+from db import store_match, match_exists, init_db, clean_db, query_items_highest_winrate
+import os
 
 
 def menu_add_account():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("\n=== ADDING ACCOUNT ===")
     game_name = input("Enter name: ")
     tag_line = input("Enter tag: ")
     add_account(game_name, tag_line)
-
+    input("Press Enter to continue...")
 
 def menu_list_accounts():
+    os.system('cls' if os.name == 'nt' else 'clear')
     list_accounts()
+    input("Press Enter to continue...")
 
-
-def menu_store_match(conn):
-    match_data = fetch_latest_match_data()
-    if not match_data:
-        return
-
-    print("\nThe match has been fetched.")
-    print("Would you like to store the match in the database?")
-    print("1) YES")
-    print("q) NO")
-    usr_choice = input(">>> ").strip().lower()
-
-    if usr_choice == "1":
-        try:
-            store_match(conn, match_data)
-        except Exception as e:
-            print(f"[ERROR]: {e}")
-    elif usr_choice == "q":
-        print("Ok!")
-    else:
-        print("Faulty input")
 
 
 def menu_clean_db(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("\n=== WIPING DATABASE ====")
     confirm = input("This will wipe all tables. Are you sure? (yes/n): ").strip().lower()
     if confirm == "yes":
         clean_db(conn)
     else:
         print("Cancelled.")
 
+    input("Press Enter to continue...")
+
+
 
 def menu_init_db(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("=== INITIALIZING DATABSE ===")
     init_db(conn)
+    input("Press Enter to continue...")
 
 
-def menu_populate_items(conn):
-    populate_items(conn)
 
 
-def menu_fetch_all_ranked(conn):
+def _select_accounts():
     accounts = load_accounts()
     if not accounts:
         print("No accounts tracked.")
+        return None
+    list_accounts()
+    choice = input("Fetch for which account? (number or 'all'): ").strip().lower()
+    if choice == "all":
+        return accounts
+    try:
+        idx = int(choice) - 1
+        if 0 <= idx < len(accounts):
+            return [accounts[idx]]
+    except ValueError:
+        pass
+    print("Invalid choice.")
+    return None
+
+def _fetch_matches(conn, label, iterator_fn, since):
+    accounts = _select_accounts()
+    if not accounts:
         return
-
     for account in accounts:
-        name = account['gameName']
-        tag = account['tagLine']
-        puuid = account['puuid']
-
-        print(f"\nFetching ranked matches for {name}#{tag}...")
-
+        name, tag, puuid = account['gameName'], account['tagLine'], account['puuid']
+        print(f"\nFetching {label} for {name}#{tag}...")
         new_count = 0
-        consecutive_old = 0
-        start_time = time.time()
-        for i, match_id in enumerate(iter_ranked_match_ids(puuid)):
+        for match_id in iterator_fn(puuid):
             if match_exists(conn, match_id):
                 continue
             match_data = get_match_details(match_id)
-            if not match_data:
+            if not match_data or "info" not in match_data:
                 continue
-            game_creation = match_data['info']['gameCreation'] / 1000
-            if game_creation < SEASON_2026_START:
-                consecutive_old += 1
-                if consecutive_old >= 5:
-                    print(f"  Reached pre-season matches, stopping.")
-                    break
-                continue
-            consecutive_old = 0
+            if match_data["info"].get("gameCreation", 0) / 1000 < since:
+                print("  Reached pre-cutoff match, stopping.")
+                break
             try:
                 if store_match(conn, match_data):
                     new_count += 1
-                    elapsed = time.time() - start_time
-                    rate = new_count / (elapsed / 60)
-                    print(f"  [{new_count} stored | {rate:.1f}/min | {int(elapsed // 60)}m {int(elapsed % 60)}s elapsed]")
+                    print(f"  [{new_count} stored]")
             except Exception as e:
                 print(f"  [ERROR] {match_id}: {e}")
+        print(f"Done. {new_count} new {label} stored for {name}#{tag}.")
 
-        print(f"Done. {new_count} new matches stored for {name}#{tag}.")
-
-def menu_normaltest():
-    game_name = input("Enter name: ")
-    tag_line = input("Enter tag: ")
-    get_latest_400_game(game_name, tag_line)
+def menu_fetch_all_ranked(conn):
+    _fetch_matches(conn, "ranked matches", iter_ranked_match_ids, since=SEASON_2026_START)
 
 def menu_fetch_all_normal_games(conn):
-    accounts = load_accounts()
-    if not accounts:
-        print("No accounts tracked.")
-        return
+    year_start = int(datetime.datetime(datetime.datetime.now().year, 1, 1).timestamp())
+    _fetch_matches(conn, "normal games", iter_normal_match_ids, since=year_start)
 
-    for account in accounts:
-        name = account['gameName']
-        tag = account['tagLine']
-        puuid = account['puuid']
-
-        print(f"\nFetching normal games for {name}#{tag}...")
-
-        new_count = 0
-        start_time = time.time()
-        for match_id, match_data in iter_normal_match_ids(puuid):
-            if match_exists(conn, match_id):
-                continue
-            try:
-                if store_match(conn, match_data):
-                    new_count += 1
-                    elapsed = time.time() - start_time
-                    rate = new_count / (elapsed / 60)
-                    print(f"  [{new_count} stored | {rate:.1f}/min | {int(elapsed // 60)}m {int(elapsed % 60)}s elapsed]")
-            except Exception as e:
-                print(f"  [ERROR] {match_id}: {e}")
-
-        print(f"Done. {new_count} new normal matches stored for {name}#{tag}")
+def menu_query_items_highest_winrate(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    result = query_items_highest_winrate(conn)
+    print("\n=== Items with the highest winrate ===")
+    for i, (item, wr) in enumerate(result):
+        print(f"{i+1}. {item}: {wr}%")
+    print("======================================")
+    input("\nPress Enter to continue...")

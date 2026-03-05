@@ -82,7 +82,6 @@ def clean_db(conn):
     cur.execute("SET FOREIGN_KEY_CHECKS = 0")
     tables = [
         "uses_item", "plays_in",
-        "participantitems", "participantstats",
         "items", "champions", "matches", "players"
     ]
     for table in tables:
@@ -263,7 +262,23 @@ def store_match(conn, match_data):
                 insert_items(conn, item, player_id, match_id)
     return True
 
-
+def query_items_highest_winrate(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT i.Name, ROUND(AVG(PlayerWon) * 100, 2) AS WR
+        FROM items i
+        JOIN uses_item as ui ON i.itemID = ui.ItemID
+        JOIN plays_in pi ON pi.PlayerID = ui.PlayerID AND pi.MatchID = ui.MatchID
+        GROUP BY i.Name
+        HAVING COUNT(*) >= 10
+        ORDER BY WR DESC
+        LIMIT 10
+        """
+    )
+    result = cur.fetchall()
+    cur.close()
+    return result
 
 
 

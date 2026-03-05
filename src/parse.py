@@ -65,7 +65,7 @@ def parse_participants(match_data):
             'DamageDealt': participant['totalDamageDealtToChampions'],
             'Team': 'BLUE' if participant['teamId'] == 100 else 'RED',
             'Level': participant['champLevel'],
-            'PlayerWon': 1 if participant['win'] == True else 0,
+            'PlayerWon': int(participant['win']),
             'Role': participant['teamPosition'],
             'puuid': participant['puuid'],
             'ChampID': participant['championId']
