@@ -18,8 +18,6 @@ def main():
         print("6. Query player KDA averages")
         print("7. Query top 5 longest matches")
         print("8. Get player summary")
-        print("9.")
-        print("0.")
         print("q. Exit\n")
         print("init). Initialise database")
         print("wipe). Wipe database")
