@@ -25,6 +25,7 @@ TABLES = [
         WinningTeam varchar(5) DEFAULT NULL,
         RiotMatchID varchar(50) DEFAULT NULL,
         QueueID int DEFAULT NULL,
+        QueueName varchar(30) DEFAULT NULL,
         PRIMARY KEY (MatchID),
         UNIQUE KEY (RiotMatchID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
@@ -95,6 +96,40 @@ def init_db(conn):
     cur = conn.cursor()
     for statement in TABLES:
         cur.execute(statement)
+    conn.commit()
+    cur.execute("DROP TRIGGER IF EXISTS t_insertQueueName")
+    cur.execute("""
+        CREATE TRIGGER t_insertQueueName
+        BEFORE INSERT ON matches
+        FOR EACH ROW
+        BEGIN
+            IF NEW.QueueID = 400 THEN
+                SET NEW.QueueName = 'Normal SR';
+            ELSEIF NEW.QueueID = 420 THEN
+                SET NEW.QueueName = 'Ranked SR';
+            ELSE
+                SET NEW.QueueName = 'Unknown';
+            END IF;
+        END
+    """)
+    conn.commit()
+    cur.execute("DROP PROCEDURE IF EXISTS GetPlayerSummary")
+    cur.execute("""
+        CREATE PROCEDURE GetPlayerSummary(IN p_name VARCHAR(30))
+        BEGIN
+            SELECT p.SummonerName, p.Tag,
+                   COUNT(*) AS TotalMatches,
+                   ROUND(AVG(pi.Kills), 2) AS AvgKills,
+                   ROUND(AVG(pi.Deaths), 2) AS AvgDeaths,
+                   ROUND(AVG(pi.Assists), 2) AS AvgAssists,
+                   ROUND(AVG((pi.Kills + pi.Assists) / GREATEST(pi.Deaths, 1)), 2) AS AvgKDA,
+                   ROUND(AVG(pi.PlayerWon) * 100, 2) AS WinRate
+            FROM plays_in pi
+            JOIN players p ON pi.PlayerID = p.PlayerID
+            WHERE p.SummonerName = p_name
+            GROUP BY pi.PlayerID, p.SummonerName, p.Tag;
+        END
+    """)
     conn.commit()
     cur.close()
     print("Tables created.")
@@ -261,6 +296,57 @@ def store_match(conn, match_data):
             if item['puuid'] == puuid:
                 insert_items(conn, item, player_id, match_id)
     return True
+
+def query_player_kda_averages(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT p.SummonerName, p.Tag,
+               ROUND(AVG(pi.Kills), 2) AS AvgKills,
+               ROUND(AVG(pi.Deaths), 2) AS AvgDeaths,
+               ROUND(AVG(pi.Assists), 2) AS AvgAssists,
+               ROUND(AVG((pi.Kills + pi.Assists) / GREATEST(pi.Deaths, 1)), 2) AS AvgKDA
+        FROM plays_in pi
+        JOIN players p ON pi.PlayerID = p.PlayerID
+        WHERE p.SummonerName LIKE '% Egg'
+        GROUP BY pi.PlayerID, p.SummonerName, p.Tag
+        ORDER BY AvgKDA DESC
+        LIMIT 10
+        """
+    )
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+
+def query_player_summary(conn, summoner_name):
+    cur = conn.cursor()
+    cur.callproc("GetPlayerSummary", [summoner_name])
+    result = []
+    for res in cur.stored_results():
+        result = res.fetchall()
+    cur.close()
+    return result
+
+
+def query_longest_matches(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT p.SummonerName, p.Tag, m.RiotMatchID,
+               ROUND(m.Duration / 60, 1) AS Duration_minutes
+        FROM plays_in pi
+        JOIN players p ON pi.PlayerID = p.PlayerID
+        JOIN matches m ON pi.MatchID = m.MatchID
+        WHERE p.SummonerName LIKE '% Egg'
+        ORDER BY m.Duration DESC
+        LIMIT 5
+        """
+    )
+    result = cur.fetchall()
+    cur.close()
+    return result
+
 
 def query_items_highest_winrate(conn):
     cur = conn.cursor()

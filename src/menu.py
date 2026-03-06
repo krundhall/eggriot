@@ -1,7 +1,7 @@
 import datetime
 from riot_api import iter_ranked_match_ids, iter_normal_match_ids, get_match_details, SEASON_2026_START
 from accounts import load_accounts, list_accounts, add_account
-from db import store_match, match_exists, init_db, clean_db, query_items_highest_winrate
+from db import store_match, match_exists, init_db, clean_db, query_items_highest_winrate, query_player_kda_averages, query_longest_matches, query_player_summary
 import os
 
 
@@ -91,6 +91,50 @@ def menu_fetch_all_ranked(conn):
 def menu_fetch_all_normal_games(conn):
     year_start = int(datetime.datetime(datetime.datetime.now().year, 1, 1).timestamp())
     _fetch_matches(conn, "normal games", iter_normal_match_ids, since=year_start)
+
+def menu_query_player_kda_averages(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    result = query_player_kda_averages(conn)
+    print("\n=== Player KDA Averages ===")
+    print(f"{'#':<3} {'Player':<25} {'Kills':>6} {'Deaths':>7} {'Assists':>8} {'KDA':>6}")
+    print("-" * 56)
+    for i, (name, tag, kills, deaths, assists, kda) in enumerate(result, 1):
+        player = f"{name}#{tag}"
+        print(f"{i:<3} {player:<25} {kills:>6} {deaths:>7} {assists:>8} {kda:>6}")
+    print("=" * 56)
+    input("\nPress Enter to continue...")
+
+
+def menu_query_player_summary(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    name = input("Enter summoner name: ").strip()
+    result = query_player_summary(conn, name)
+    if not result:
+        print(f"No data found for '{name}'.")
+        input("\nPress Enter to continue...")
+        return
+    print(f"\n=== Player Summary: {name} ===")
+    print(f"{'Player':<25} {'Matches':>8} {'Kills':>6} {'Deaths':>7} {'Assists':>8} {'KDA':>6} {'WR':>6}")
+    print("-" * 65)
+    for summoner, tag, matches, kills, deaths, assists, kda, wr in result:
+        player = f"{summoner}#{tag}"
+        print(f"{player:<25} {matches:>8} {kills:>6} {deaths:>7} {assists:>8} {kda:>6} {wr:>5}%")
+    print("=" * 65)
+    input("\nPress Enter to continue...")
+
+
+def menu_query_longest_matches(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    result = query_longest_matches(conn)
+    print("\n=== Top 5 Longest Matches ===")
+    print(f"{'#':<3} {'Player':<25} {'Duration':>10}")
+    print("-" * 40)
+    for i, (name, tag, match_id, duration) in enumerate(result, 1):
+        player = f"{name}#{tag}"
+        print(f"{i:<3} {player:<25} {duration:>8} min")
+    print("=" * 40)
+    input("\nPress Enter to continue...")
+
 
 def menu_query_items_highest_winrate(conn):
     os.system('cls' if os.name == 'nt' else 'clear')

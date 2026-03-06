@@ -15,9 +15,9 @@ def main():
         print("3. Fetch all ranked matches (this season)")
         print("4. Fetch all normal matches (this year)")
         print("5. Query what items has the highest winrate")
-        print("6.")
-        print("7.")
-        print("8.")
+        print("6. Query player KDA averages")
+        print("7. Query top 5 longest matches")
+        print("8. Get player summary")
         print("9.")
         print("0.")
         print("q. Exit\n")
@@ -37,6 +37,12 @@ def main():
             menu_fetch_all_normal_games(conn)
         elif choice == "5":
             menu_query_items_highest_winrate(conn)
+        elif choice == "6":
+            menu_query_player_kda_averages(conn)
+        elif choice == "7":
+            menu_query_longest_matches(conn)
+        elif choice == "8":
+            menu_query_player_summary(conn)
         elif choice == "init":
             menu_init_db(conn)
         elif choice == "wipe":
