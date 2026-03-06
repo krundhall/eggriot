@@ -20,6 +20,8 @@ erDiagram
         string GameMode
         string PatchVersion
         string WinningTeam
+        int QueueID
+        string QueueName
     }
 
     champions {
