@@ -7,7 +7,7 @@
 
 # If you intend to run this script:
 - If you wanna run this yourself you would need a API key and your own .env file.
-- I do not have any intentions of putting my developer API key here publically, thats just the sql dump comes preloaded!
+- I do not have any intentions of putting my developer API key here publically, thats just why the sql dump comes preloaded!
 
 ## If you clone and run the script - run it from the src/ directory!
 ```bash
