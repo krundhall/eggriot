@@ -14,7 +14,6 @@ cd eggriot && pip install -r requirements.txt
 cd src && python3 main.py
 ```
 
-## E/R Diagram
 
 ```mermaid
 erDiagram
