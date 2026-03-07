@@ -1,4 +1,4 @@
-# Hello dear examinor,
+# Hello dear examiner,
 
 ### In this repo you will find everything you need for my project.
 - ~/src  | This directory contains all the python code for this project
@@ -7,7 +7,12 @@
 
 
 
-###If you clone and run the script - run it from the src/ directory!
+## If you clone and run the script - run it from the src/ directory!
+```bash
+git clone git@github.com:krundhall/eggriot
+cd eggriot && pip install -r requirements.txt
+cd src && python3 main.py
+```
 
 ## E/R Diagram
 
