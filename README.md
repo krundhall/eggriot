@@ -1,5 +1,13 @@
-### Just a silly Python project messing with Riots API
-# If you clone and run the script - run it from the src/ directory!
+# Hello dear examinor,
+
+### In this repo you will find everything you need for my project.
+- ~/src  | This directory contains all the python code for this project
+- ~/sql  | This is where you're gonna find the sql dump. It should come preloaded with data!
+- ~/docs | The actual written report and under ~/docs/ER is where youre gonna find everything that pertains to the ER diagram
+
+
+
+###If you clone and run the script - run it from the src/ directory!
 
 ## E/R Diagram
 
