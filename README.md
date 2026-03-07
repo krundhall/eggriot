@@ -5,9 +5,9 @@
 - ~/sql  | This is where you're gonna find the sql dump. It should come preloaded with data!
 - ~/docs | The actual written report and under ~/docs/ER is where youre gonna find everything that pertains to the ER diagram
 
-# If you intend to run this script - make your own .env file
-
-
+# If you intend to run this script:
+- If you wanna run this yourself you would need a API key and your own .env file.
+- I do not have any intentions of putting my developer API key here publically, thats just the sql dump comes preloaded!
 
 ## If you clone and run the script - run it from the src/ directory!
 ```bash

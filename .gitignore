@@ -4,7 +4,6 @@ __pycache__/
 .DS_Store
 venv/
 thoughts.md
-accounts.json
 items.json
 .vscode
 ideas.md
