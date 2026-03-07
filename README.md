@@ -5,6 +5,7 @@
 - ~/sql  | This is where you're gonna find the sql dump. It should come preloaded with data!
 - ~/docs | The actual written report and under ~/docs/ER is where youre gonna find everything that pertains to the ER diagram
 
+# If you intend to run this script - make your own .env file
 
 
 
@@ -14,7 +15,6 @@ git clone git@github.com:krundhall/eggriot
 cd eggriot && pip install -r requirements.txt
 cd src && python3 main.py
 ```
-# If you intend to run this script - make your own .env file
 
 ```mermaid
 erDiagram
