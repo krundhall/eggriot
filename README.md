@@ -1,4 +1,5 @@
 ### Just a silly Python project messing with Riots API
+# If you clone and run the script - run it from the src/ directory!
 
 ## E/R Diagram
 

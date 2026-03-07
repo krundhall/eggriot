@@ -84,6 +84,7 @@ def _fetch_matches(conn, label, iterator_fn, since):
             except Exception as e:
                 print(f"  [ERROR] {match_id}: {e}")
         print(f"Done. {new_count} new {label} stored for {name}#{tag}.")
+    input("Press Enter to continue...")
 
 def menu_fetch_all_ranked(conn):
     _fetch_matches(conn, "ranked matches", iter_ranked_match_ids, since=SEASON_2026_START)
