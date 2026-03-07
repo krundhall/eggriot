@@ -7,13 +7,14 @@
 
 
 
+
 ## If you clone and run the script - run it from the src/ directory!
 ```bash
 git clone git@github.com:krundhall/eggriot
 cd eggriot && pip install -r requirements.txt
 cd src && python3 main.py
 ```
-
+# If you intend to run this script - make your own .env file
 
 ```mermaid
 erDiagram

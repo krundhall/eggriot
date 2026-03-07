@@ -368,6 +368,41 @@ def query_items_highest_winrate(conn):
 
 
 
+def query_most_played_champions(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT c.Name, COUNT(*) AS TimesPlayed
+        FROM plays_in pi
+        JOIN champions c ON pi.ChampID = c.ChampID
+        GROUP BY pi.ChampID, c.Name
+        ORDER BY TimesPlayed DESC
+        LIMIT 10
+        """
+    )
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+
+def query_most_purchased_items(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT i.Name, COUNT(*) AS TimesBought
+        FROM uses_item ui
+        JOIN items i ON ui.ItemID = i.ItemID
+        WHERE ui.Slot != 6
+        GROUP BY ui.ItemID, i.Name
+        ORDER BY TimesBought DESC
+        LIMIT 10
+        """
+    )
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+
 if __name__ == "__main__":
     conn = get_connection()
     print("Connected:", conn.is_connected())

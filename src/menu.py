@@ -1,7 +1,7 @@
 import datetime
 from riot_api import iter_ranked_match_ids, iter_normal_match_ids, get_match_details, SEASON_2026_START
 from accounts import load_accounts, list_accounts, add_account
-from db import store_match, match_exists, init_db, clean_db, query_items_highest_winrate, query_player_kda_averages, query_longest_matches, query_player_summary
+from db import store_match, match_exists, init_db, clean_db, query_items_highest_winrate, query_player_kda_averages, query_longest_matches, query_player_summary, query_most_purchased_items, query_most_played_champions
 import os
 
 
@@ -134,6 +134,30 @@ def menu_query_longest_matches(conn):
         player = f"{name}#{tag}"
         print(f"{i:<3} {player:<25} {duration:>8} min")
     print("=" * 40)
+    input("\nPress Enter to continue...")
+
+
+def menu_query_most_purchased_items(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    result = query_most_purchased_items(conn)
+    print("\n=== Most Purchased Items ===")
+    print(f"{'#':<3} {'Item':<30} {'Times Bought':>12}")
+    print("-" * 47)
+    for i, (item, count) in enumerate(result, 1):
+        print(f"{i:<3} {item:<30} {count:>12}")
+    print("=" * 47)
+    input("\nPress Enter to continue...")
+
+
+def menu_query_most_played_champions(conn):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    result = query_most_played_champions(conn)
+    print("\n=== Top 10 Most Played Champions ===")
+    print(f"{'#':<3} {'Champion':<20} {'Times Played':>12}")
+    print("-" * 37)
+    for i, (name, count) in enumerate(result, 1):
+        print(f"{i:<3} {name:<20} {count:>12}")
+    print("=" * 37)
     input("\nPress Enter to continue...")
 
 
