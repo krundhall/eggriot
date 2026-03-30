@@ -4,6 +4,8 @@ from db import get_connection
 from menu import *
 import os
 
+# code for nice stuff!
+
 def main():
     conn = get_connection()
 

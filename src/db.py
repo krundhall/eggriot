@@ -4,7 +4,6 @@ import mysql.connector
 from parse import parse_all, get_and_parse_items_json
 load_dotenv()
 
-
 TABLES = [
     """CREATE TABLE IF NOT EXISTS players (
         PlayerID int NOT NULL AUTO_INCREMENT,
@@ -15,7 +14,7 @@ TABLES = [
         Tag varchar(10) DEFAULT NULL,
         PRIMARY KEY (PlayerID),
         UNIQUE KEY (PUUID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
+    )""",
 
     """CREATE TABLE IF NOT EXISTS matches (
         MatchID int NOT NULL AUTO_INCREMENT,
@@ -28,20 +27,20 @@ TABLES = [
         QueueName varchar(30) DEFAULT NULL,
         PRIMARY KEY (MatchID),
         UNIQUE KEY (RiotMatchID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
+    )""",
 
     """CREATE TABLE IF NOT EXISTS champions (
         ChampID int NOT NULL,
         Name varchar(30) DEFAULT NULL,
         PRIMARY KEY (ChampID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
+    )""",
 
     """CREATE TABLE IF NOT EXISTS items (
         ItemID int NOT NULL,
         Name varchar(30) DEFAULT NULL,
         GoldCost int DEFAULT NULL,
         PRIMARY KEY (ItemID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
+    )""",
 
     """CREATE TABLE IF NOT EXISTS plays_in (
         PlayerID int NOT NULL,
@@ -63,7 +62,7 @@ TABLES = [
         CONSTRAINT plays_in_fk_player FOREIGN KEY (PlayerID) REFERENCES players (PlayerID),
         CONSTRAINT plays_in_fk_match FOREIGN KEY (MatchID) REFERENCES matches (MatchID),
         CONSTRAINT plays_in_fk_champ FOREIGN KEY (ChampID) REFERENCES champions (ChampID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
+    )""",
 
     """CREATE TABLE IF NOT EXISTS uses_item (
         PlayerID int NOT NULL,
@@ -75,7 +74,7 @@ TABLES = [
         CONSTRAINT uses_item_fk_player FOREIGN KEY (PlayerID) REFERENCES players (PlayerID),
         CONSTRAINT uses_item_fk_match FOREIGN KEY (MatchID) REFERENCES matches (MatchID),
         CONSTRAINT uses_item_fk_item FOREIGN KEY (ItemID) REFERENCES items (ItemID)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
+    )""",
 ]
 
 def clean_db(conn):
